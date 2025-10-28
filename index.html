@@ -38,6 +38,25 @@
     .save:hover{background:rgba(11,46,89,0.05);}
     .share{background:var(--navy);color:white}
     .footer{margin-top:18px;color:var(--muted);font-size:12px;text-align:center}
+    .toast {
+      display:none;
+      position:fixed;
+      bottom:30px;
+      left:50%;
+      transform:translateX(-50%);
+      background:var(--navy);
+      color:white;
+      padding:10px 18px;
+      border-radius:10px;
+      font-size:14px;
+      box-shadow:0 4px 14px rgba(0,0,0,0.2);
+      animation:fadeInOut 3s ease forwards;
+    }
+    @keyframes fadeInOut {
+      0% {opacity:0;transform:translate(-50%,20px);}
+      10%,90% {opacity:1;transform:translate(-50%,0);}
+      100% {opacity:0;transform:translate(-50%,20px);}
+    }
     @media (max-width:420px){.card{padding:20px}.logo{width:60px;height:60px}}
   </style>
 </head>
@@ -61,16 +80,15 @@
     <div class="actions">
       <a class="btn call" href="tel:+918956306602">Call</a>
       <a class="btn email" href="mailto:ruturaj.hengyuindia@gmail.com">Email</a>
-      
-      <!-- Direct open contact -->
-      <a class="btn save" id="saveContactBtn" href="#">💾 Save Contact</a>
-      
+      <a class="btn save" href="contact.vcf" id="saveBtn">💾 Save Contact</a>
       <button class="btn share" id="shareBtn">🔗 Share</button>
     </div>
   </div>
 
+  <div class="toast" id="toast">📥 Your contact card is downloading.<br>Tap “Open” to add it to your phone contacts.</div>
+
   <script>
-    // SHARE BUTTON
+    // Share button logic
     const shareBtn = document.getElementById('shareBtn');
     shareBtn.addEventListener('click', async () => {
       const shareUrl = location.href;
@@ -94,22 +112,12 @@
       }
     });
 
-    // SAVE CONTACT BUTTON
-    const saveBtn = document.getElementById('saveContactBtn');
+    // Save Contact message
+    const saveBtn = document.getElementById('saveBtn');
+    const toast = document.getElementById('toast');
     saveBtn.addEventListener('click', () => {
-      const vcfData = `
-BEGIN:VCARD
-VERSION:3.0
-FN:Ruturaj Bawane
-ORG:Hengyu Cleaning Products Pvt. Ltd.
-TITLE:Marketing Executive
-TEL;TYPE=CELL:+919139497213
-EMAIL:Ruturajraj11@gmail.com
-END:VCARD
-      `.trim();
-
-      const vcfUri = 'data:text/vcard;charset=utf-8,' + encodeURIComponent(vcfData);
-      window.location.href = vcfUri;
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 3000);
     });
   </script>
 </body>
