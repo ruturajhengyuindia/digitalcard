@@ -35,7 +35,6 @@
     .call:hover{opacity:0.9}
     .email{background:white;border:1px solid #cde2d6;color:var(--green)}
     .save{background:white;border:2px dashed rgba(11,46,89,0.15);color:var(--navy)}
-    .save:hover{background:rgba(11,46,89,0.05);}
     .share{background:var(--navy);color:white}
     .footer{margin-top:18px;color:var(--muted);font-size:12px;text-align:center}
     @media (max-width:420px){.card{padding:20px}.logo{width:60px;height:60px}}
@@ -59,38 +58,49 @@
     </div>
 
     <div class="actions">
-      <a class="btn call" href="tel:+919139497213">Call</a>
-      <a class="btn email" href="mailto:Ruturajraj11@gmail.com">Email</a>
-      <a class="btn save" href="contact.vcf">💾 Save Contact</a>
+      <a class="btn call" id="callBtn" href="tel:+919139497213">Call</a>
+      <a class="btn email" id="emailBtn" href="mailto:Ruturajraj11@gmail.com">Email</a>
+      <button class="btn save" id="saveBtn">💾 Save Contact</button>
       <button class="btn share" id="shareBtn">🔗 Share</button>
     </div>
-  </div>
+
+     </div>
 
   <script>
-    const shareBtn = document.getElementById('shareBtn');
+    const cardData = {
+      fn: 'Ruturaj Bawane',
+      org: 'Hengyu Cleaning Products Pvt. Ltd.',
+      title: 'Marketing Executive',
+      tel: '+919139497213',
+      email: 'Ruturajraj11@gmail.com',
+      url: '',
+      note: 'Marketing Executive — Hengyu Cleaning Products Pvt. Ltd.'
+    };
 
-    shareBtn.addEventListener('click', async () => {
+    function makeVCard(data){
+      return `BEGIN:VCARD\nVERSION:3.0\nFN:${data.fn}\nORG:${data.org}\nTITLE:${data.title}\nTEL;TYPE=CELL:${data.tel}\nEMAIL:${data.email}\nNOTE:${data.note}\nEND:VCARD`;
+    }
+
+    document.getElementById('saveBtn').addEventListener('click',()=>{
+      const v = makeVCard(cardData);
+      const blob = new Blob([v],{type:'text/vcard'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = `${cardData.fn.replace(/\s+/g,'_')}.vcf`;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),1500);
+    });
+
+    document.getElementById('shareBtn').addEventListener('click',async ()=>{
       const shareUrl = location.href;
-      if (navigator.share) {
-        try {
-          await navigator.share({
-            title: 'Ruturaj Bawane — Marketing Executive',
-            text: 'Check out my digital business card:',
-            url: shareUrl
-          });
-        } catch (err) {
-          console.log('Share cancelled');
-        }
+      if(navigator.share){
+        try{ await navigator.share({title:cardData.fn,text:cardData.title,url:shareUrl}); }
+        catch(e){ alert('Share cancelled'); }
       } else {
-        try {
-          await navigator.clipboard.writeText(shareUrl);
-          alert('🔗 Link copied! You can paste it anywhere to share.');
-        } catch (err) {
-          prompt('Copy this link to share:', shareUrl);
-        }
+        try{ await navigator.clipboard.writeText(shareUrl); alert('Link copied to clipboard. Paste to share.'); }
+        catch(e){ prompt('Copy this link to share:', shareUrl); }
       }
     });
   </script>
 </body>
 </html>
-
